@@ -32,9 +32,9 @@ jobs:
 
       - name: Verify package version and get npm tag
         id: get_npm_tag
-        uses: anguyen-yext2/slapshot-reusable-workflows-test/verify-publish@v1
-        with:
-          git-tag: ${{ github.ref_name }}
+        run: |
+          TAG=$(npm run ci-verify-publish ${{ github.ref_name }} | tail -n 1)
+          echo "npm_tag=$TAG" >> $GITHUB_OUTPUT
       
       - name: Debug npm tag
         run: |
