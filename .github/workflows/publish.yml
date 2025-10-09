@@ -47,7 +47,7 @@ jobs:
           const { version: currentVersion, private: isPrivate } = pkg;
 
           if (isPrivate) {
-            console.error('❌ Package is private.'');
+            console.error('❌ Package is private.');
             process.exit(1);
           }
 
