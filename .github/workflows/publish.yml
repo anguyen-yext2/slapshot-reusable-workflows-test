@@ -52,7 +52,7 @@ jobs:
           }
 
           const tag = `v@currentVersion`;
-          if !commitMsg.includes(tag)
+          if (!commitMsg.includes(tag)) {
             console.error(`❌ Commit message '${commitMsg}' must include '${tag}'`);
             process.exit(1);
           }
