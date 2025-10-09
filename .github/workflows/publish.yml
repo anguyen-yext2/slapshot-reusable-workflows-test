@@ -47,13 +47,13 @@ jobs:
           const { version: currentVersion, private: isPrivate } = pkg;
 
           if (isPrivate) {
-            console.error('❌ Package is private.');
+            console.error('Package is private.');
             process.exit(1);
           }
 
-          const tag = `v${currentVersion}`;
-          if (!commitMsg.includes(tag)) {
-            console.error(`❌ Commit message '${commitMsg}' must include '${tag}'`);
+          const expectedCommitMsg = `release: v${currentVersion}`;
+          if (!commitMsg === expectedCommitMsg) {
+            console.error(`Invalid commit message. \nExpected: '${expectedCommitMsg}'.\nActual: '${commitMsg}'`);
             process.exit(1);
           }
 
@@ -61,8 +61,6 @@ jobs:
           if (currentVersion.includes('rc')) npmTag = 'rc';
           else if (currentVersion.includes('beta')) npmTag = 'beta';
           else if (currentVersion.includes('alpha')) npmTag = 'alpha';
-
-          console.log(`✅ NPM tag determined: ${npmTag}`);
 
           // Export to GitHub Actions output
           fs.writeFileSync(process.env.GITHUB_OUTPUT, `npm_tag=${npmTag}\n`, { flag: 'a' });
