@@ -54,15 +54,15 @@ jobs:
       # `npm rebuild` will run all those post-install scripts for us.
       - run: npm rebuild
       - run: |
-          echo "$BUILD_SCRIPT" > build.sh
-          chmod +x build.sh
-          ./build.sh
+          echo "$BUILD_SCRIPT" > _build_script.sh
+          chmod +x _build_script.sh
+          ./_build_script.sh
         env:
           BUILD_SCRIPT: ${{ inputs.build_script }}
       - run: |
-          echo "$TEST_SCRIPT" > test.sh
-          chmod +x test.sh
-          ./test.sh
+          echo "$TEST_SCRIPT" > _test_script.sh
+          chmod +x _test_script.sh
+          ./_test_script.sh
         env:
           MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
           TEST_SCRIPT: ${{ inputs.test_script }}
