@@ -53,12 +53,13 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       # `npm rebuild` will run all those post-install scripts for us.
       - run: npm rebuild
-      - run: | 
-          eval "$BUILD_SCRIPT"
+      - run: |
+          echo "$BUILD_SCRIPT" > build.sh
+          chmod +x build.sh
+          ./build.sh
         env:
           BUILD_SCRIPT: ${{ inputs.build_script }}
-      - run: |
-          eval "$TEST_SCRIPT"
+      - run: "$TEST_SCRIPT"
         env:
           MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
           TEST_SCRIPT: ${{ inputs.test_script }}
