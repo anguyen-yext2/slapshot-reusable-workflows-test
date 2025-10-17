@@ -35,7 +35,9 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       # `npm rebuild` will run all those post-install scripts for us.
       - run: npm rebuild
-      - run: ${{ inputs.build_script }}
+      - uses: anguyen-yext2/slapshot-reusable-workflows-test/run-script@v1
+        with:
+          script: ${{ inputs.build_script }}
         env:
           MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
       - run: npm run wcag
