@@ -17,6 +17,17 @@ const expectedCommitMsg = `release: v${currentVersion}`;
 if (!commitMsg === expectedCommitMsg) {
   core.setFailed(`Invalid commit message. \nExpected: '${expectedCommitMsg}'.\nActual: '${commitMsg}'`);
 }
+console.log('>>>commitMsg: ', commitMsg);
+console.log('>>>currentVersion: ', currentVersion);
+
+const temp = currentVersion.includes('rc') 
+  ? 'rc'
+  : currentVersion.includes('beta')
+    ? 'beta'
+    : currentVersion.includes('alpha')
+      ? 'alpha'
+      : 'latest';
+console.log('>>>temp: ', temp);
 
 core.setOutput('npm_tag', currentVersion.includes('rc') 
   ? 'rc'
