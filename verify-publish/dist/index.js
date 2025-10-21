@@ -2821,7 +2821,7 @@ const core = __nccwpck_require__(186);
 const fs = __nccwpck_require__(147);
 const path = __nccwpck_require__(17);
 
-const commitMsg = process.env.COMMIT_MSG;
+const commitMsg = core.getInput('COMMIT_MSG');
 
 const pkgPath = __nccwpck_require__.ab + "package.json";
 const pkg = JSON.parse(fs.readFileSync(__nccwpck_require__.ab + "package.json", 'utf8'));

@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const fs = require('fs');
 const path = require('path');
 
-const commitMsg = process.env.COMMIT_MSG;
+const commitMsg = core.getInput('COMMIT_MSG');
 
 const pkgPath = path.resolve(process.cwd(), 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
