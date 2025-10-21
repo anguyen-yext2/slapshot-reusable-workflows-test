@@ -7,6 +7,7 @@ const commitMsg = core.getInput('COMMIT_MSG');
 const pkgPath = path.resolve(process.cwd(), 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 
+console.log('>>>pkg: ', pkg);
 const { version: currentVersion, private: isPrivate } = pkg;
 
 if (isPrivate) {
@@ -14,7 +15,7 @@ if (isPrivate) {
 }
 
 const expectedCommitMsg = `release: v${currentVersion}`;
-if (!commitMsg === expectedCommitMsg) {
+if (commitMsg !== expectedCommitMsg) {
   core.setFailed(`Invalid commit message. \nExpected: '${expectedCommitMsg}'.\nActual: '${commitMsg}'`);
 }
 console.log('>>>commitMsg: ', commitMsg);
