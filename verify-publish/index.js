@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const commitMsg = core.getInput('COMMIT_MSG');
-const repoPath = core.getInput('REPO_PATH');
+const repoPath = path.resolve(process.cwd(), core.getInput('REPO_PATH'));
 
 const pkgPath = path.resolve(repoPath, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
