@@ -3,8 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 const commitMsg = core.getInput('COMMIT_MSG');
+const repoPath = core.getInput('REPO_PATH');
 
-const pkgPath = path.resolve(process.cwd(), 'package.json');
+const pkgPath = path.resolve(repoPath, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 console.log('>>>GitHub repository:', process.env.GITHUB_REPOSITORY);
 console.log('>>>pkg: ', pkg);

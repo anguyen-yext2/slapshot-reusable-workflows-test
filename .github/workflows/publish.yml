@@ -36,6 +36,7 @@ jobs:
         uses: anguyen-yext2/slapshot-reusable-workflows-test/verify-publish@v1
         with:
           COMMIT_MSG: ${{ github.event.head_commit.message }}
+          REPO_PATH: ${{ github.workspace }}
       
       - name: Debug npm tag
         run: |
