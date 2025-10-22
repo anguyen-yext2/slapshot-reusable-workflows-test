@@ -5,12 +5,13 @@ const { execSync } = require('child_process');
 
 try {
   const tmpDir = process.env.RUNNER_TEMP || os.tmpdir();
+  const script = core.getInput('script');
   const scriptPath = path.join(tmpDir, `script-${Date.now()}.sh`);
-  const workingDirectory = core.getInput('working_directory');
 
   fs.writeFileSync(scriptPath, `#!/bin/bash\n${script}`);
   fs.chmodSync(scriptPath, 0o755);
 
+  const workingDirectory = core.getInput('working_directory');
   execSync(scriptPath, {
     stdio: 'inherit',
     cwd: workingDirectory,
@@ -18,6 +19,6 @@ try {
   });
   fs.unlinkSync(scriptPath);
 } catch (error) {
-  console.error('Script failed with error:\n', error.stack);
+  console.error('Script failed with error:\n', err.stack);
   core.setFailed(error.message);
 }
