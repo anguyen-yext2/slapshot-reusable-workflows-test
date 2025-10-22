@@ -10,7 +10,11 @@ try {
   fs.writeFileSync(scriptPath, `#!/bin/bash\n${script}`);
   fs.chmodSync(scriptPath, 0o755);
 
-  execSync(`cd ${workingDirectory} && ${scriptPath}`, { stdio: 'inherit' });
+  execSync(scriptPath, {
+    stdio: 'inherit',
+    cwd: workingDirectory,
+    env: process.env,
+  });
   fs.unlinkSync(scriptPath);
 } catch (error) {
   core.setFailed(error.message);
