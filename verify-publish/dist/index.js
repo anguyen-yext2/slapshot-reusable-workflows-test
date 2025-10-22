@@ -2825,7 +2825,7 @@ const commitMsg = core.getInput('COMMIT_MSG');
 
 const pkgPath = __nccwpck_require__.ab + "package.json";
 const pkg = JSON.parse(fs.readFileSync(__nccwpck_require__.ab + "package.json", 'utf8'));
-
+console.log('>>>GitHub repository:', process.env.GITHUB_REPOSITORY);
 console.log('>>>pkg: ', pkg);
 const { version: currentVersion, private: isPrivate } = pkg;
 
