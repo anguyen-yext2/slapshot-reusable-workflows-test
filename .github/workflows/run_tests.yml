@@ -31,10 +31,6 @@ jobs:
   tests:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: ${{ inputs.working_directory }}
-
     strategy:
       matrix:
         node-version: ${{ fromJSON(inputs.node_matrix) }}
