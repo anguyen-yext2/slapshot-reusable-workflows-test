@@ -2830,12 +2830,15 @@ const fs = __nccwpck_require__(147);
 const { execSync } = __nccwpck_require__(81);
 
 try {
-  const script = core.getInput('script', { required: true });
+  const tmpDir = process.env.RUNNER_TEMP || os.tmpdir();
+  const scriptPath = path.join(tmpDir, `script-${Date.now()}.sh`);
+  const workingDirectory = core.getInput('working_directory');
 
-  fs.writeFileSync('script.sh', `#!/bin/bash\n${script}`);
-  fs.chmodSync('script.sh', 0o755);
+  fs.writeFileSync(scriptPath, `#!/bin/bash\n${script}`);
+  fs.chmodSync(scriptPath, 0o755);
 
-  execSync('./script.sh', { stdio: 'inherit' });
+  execSync(`cd ${workingDirectory} && ${scriptPath}`, { stdio: 'inherit' });
+  fs.unlinkSync(scriptPath);
 } catch (error) {
   core.setFailed(error.message);
 }
