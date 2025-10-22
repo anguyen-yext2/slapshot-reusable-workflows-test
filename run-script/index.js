@@ -18,5 +18,6 @@ try {
   });
   fs.unlinkSync(scriptPath);
 } catch (error) {
+  console.error('Script failed with error:\n', error.stack);
   core.setFailed(error.message);
 }

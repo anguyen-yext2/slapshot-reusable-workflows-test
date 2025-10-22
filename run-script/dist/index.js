@@ -2827,6 +2827,7 @@ var __webpack_exports__ = {};
 (() => {
 const core = __nccwpck_require__(186);
 const fs = __nccwpck_require__(147);
+const path = __nccwpck_require__(17);
 const { execSync } = __nccwpck_require__(81);
 
 try {
@@ -2844,6 +2845,7 @@ try {
   });
   fs.unlinkSync(scriptPath);
 } catch (error) {
+  console.error('Script failed with error:\n', error.stack);
   core.setFailed(error.message);
 }
 })();
