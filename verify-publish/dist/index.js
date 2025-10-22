@@ -2822,9 +2822,9 @@ const fs = __nccwpck_require__(147);
 const path = __nccwpck_require__(17);
 
 const commitMsg = core.getInput('COMMIT_MSG');
-const repoPath = path.resolve(process.cwd(), core.getInput('REPO_PATH'));
+const repoPath = core.getInput('REPO_PATH');
 
-const pkgPath = __nccwpck_require__.ab + "verify-publish/" + repoPath + '/package.json';
+const pkgPath = path.join(repoPath, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 console.log('>>>GitHub repository:', process.env.GITHUB_REPOSITORY);
 console.log('>>>pkg: ', pkg);
