@@ -2851,12 +2851,12 @@ core.setOutput('npm_tag', currentVersion.includes('rc')
       : 'latest');
 
 function getPackageVersionInMonorepo() {
-  const githubTag = input.replace(/^release:\s*/, '').trim();
+  const githubTag = commitMsg.replace(/^release:\s*/, '').trim();
 
-  const versionIndex = clean.lastIndexOf('@v');
+  const versionIndex = githubTag.lastIndexOf('@v');
   if (versionIndex !== -1) {
     const expectedPackageName = githubTag.slice(0, versionIndex);
-    const expectedVersion = clean.slice(versionIndex + 2);
+    const expectedVersion = githubTag.slice(versionIndex + 2);
 
     const packageFolders = fs.readdirSync(packagesDir, { withFileTypes: true })
       .filter(dirent => dirent.isDirectory())
