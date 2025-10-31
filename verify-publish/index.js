@@ -35,28 +35,29 @@ function getPackageVersionInMonorepo() {
   const githubTag = commitMsg.replace(/^release:\s*/, '').trim();
 
   const versionIndex = githubTag.lastIndexOf('@v');
-  if (versionIndex !== -1) {
-    const expectedPackageName = githubTag.slice(0, versionIndex);
-    const expectedVersion = githubTag.slice(versionIndex + 2);
+  if (versionIndex === -1) {
+    core.setFailed('Unexpected commit message format for a package contained in a monorepo');
+  }
+  const expectedPackageName = githubTag.slice(0, versionIndex);
+  const expectedVersion = githubTag.slice(versionIndex + 2);
 
-    const packageFolders = fs.readdirSync(packagesDir, { withFileTypes: true })
-      .filter(dirent => dirent.isDirectory())
-      .map(dirent => dirent.name);
+  const packageFolders = fs.readdirSync(packagesDir, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => dirent.name);
 
-    for (const folder of packageFolders) {
-      const packageJsonPath = path.join(packagesDir, folder, 'package.json');
-      if (!fs.existsSync(packageJsonPath)) continue;
+  for (const folder of packageFolders) {
+    const packageJsonPath = path.join(packagesDir, folder, 'package.json');
+    if (!fs.existsSync(packageJsonPath)) continue;
 
-      try {
-        const content = fs.readFileSync(packageJsonPath, 'utf-8');
-        pkg = JSON.parse(content);
+    try {
+      const content = fs.readFileSync(packageJsonPath, 'utf-8');
+      pkg = JSON.parse(content);
 
-        if (pkg.name === expectedPackageName && pkg.version === expectedVersion && !pkg.private) {
-          return pkg.version
-        }
-      } catch (err) {
-        core.setFailed(`Failed to parse ${packageJsonPath}:`, err);
+      if (pkg.name === expectedPackageName && pkg.version === expectedVersion && !pkg.private) {
+        return pkg.version
       }
+    } catch (err) {
+      core.setFailed(`Failed to parse ${packageJsonPath}:`, err);
     }
   }
   core.setFailed(`Could not find a public package with name '${expectedPackageName}' and '${expectedVersion}' under the github monorepo`);
