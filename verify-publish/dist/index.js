@@ -2834,7 +2834,7 @@ if (commitMsg !== expectedCommitMsg) {
   // handle monorepo
   const packagesDir = path.resolve(repoPath, 'packages');
   if (fs.existsSync(packagesDir)) {
-    currentVersion = getPackageVersionInMonorepo();
+    currentVersion = getPackageVersionInMonorepo(packagesDir);
   } else {
     core.setFailed(`Invalid commit message. \nExpected: '${expectedCommitMsg}'.\nActual: '${commitMsg}'`);
   }
@@ -2850,7 +2850,7 @@ core.setOutput('npm_tag', currentVersion.includes('rc')
       ? 'alpha'
       : 'latest');
 
-function getPackageVersionInMonorepo() {
+function getPackageVersionInMonorepo(packagesDir) {
   const githubTag = commitMsg.replace(/^release:\s*/, '').trim();
 
   const versionIndex = githubTag.lastIndexOf('@v');

@@ -31,7 +31,7 @@ core.setOutput('npm_tag', currentVersion.includes('rc')
       ? 'alpha'
       : 'latest');
 
-function getPackageVersionInMonorepo(packagesDir: string) {
+function getPackageVersionInMonorepo(packagesDir) {
   const githubTag = commitMsg.replace(/^release:\s*/, '').trim();
 
   const versionIndex = githubTag.lastIndexOf('@v');
