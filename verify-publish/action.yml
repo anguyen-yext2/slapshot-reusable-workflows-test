@@ -3,9 +3,6 @@ description: verify package version and get npm tag
 outputs:
   npm_tag:
     description: The npm tag to publish under
-env:
-  COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-  REPO_PATH: ${{ github.workspace }}
 runs:
   using: node20
   main: dist/index.js
