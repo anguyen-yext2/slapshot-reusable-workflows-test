@@ -2863,7 +2863,7 @@ function getPackageVersionInMonorepo(packagesDir) {
   const packageFolders = fs.readdirSync(packagesDir, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name);
-
+console.log('>>>packageFolders: ', packageFolders);
   for (const folder of packageFolders) {
     const packageJsonPath = path.join(packagesDir, folder, 'package.json');
     if (!fs.existsSync(packageJsonPath)) continue;
@@ -2871,6 +2871,7 @@ function getPackageVersionInMonorepo(packagesDir) {
     try {
       const content = fs.readFileSync(packageJsonPath, 'utf-8');
       pkg = JSON.parse(content);
+console.log('>>>pkg: ', pkg);
 
       if (pkg.name === expectedPackageName && pkg.version === expectedVersion && !pkg.private) {
         return pkg.version
@@ -2879,7 +2880,7 @@ function getPackageVersionInMonorepo(packagesDir) {
       core.setFailed(`Failed to parse ${packageJsonPath}:`, err);
     }
   }
-  core.setFailed(`Could not find a public package with name '${expectedPackageName}' and '${expectedVersion}' under the github monorepo`);
+  core.setFailed(`Could not find a public package with name '${expectedPackageName}' and version '${expectedVersion}' under the github monorepo`);
 }
 })();
 
