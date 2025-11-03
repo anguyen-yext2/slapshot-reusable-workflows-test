@@ -27,7 +27,7 @@ function verifyPublish() {
     // attempt to treat the current package as a monorepo that contains the target package to be published
     const packagesDir = path.resolve(repoPath, 'packages');
     if (fs.existsSync(packagesDir)) {
-      return getPackageVersionInMonorepo(packagesDir);
+      return handleMonorepo(packagesDir);
     } else {
       core.setFailed(`Invalid commit message. \nExpected: '${expectedCommitMsg}'.\nActual: '${commitMsg}'`);
     }
