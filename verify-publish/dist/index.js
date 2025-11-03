@@ -2842,7 +2842,7 @@ if (commitMsg !== expectedCommitMsg) {//} && commitMsg !== expectedMonorepoCommi
     const expectedPackageName = githubTag.slice(0, versionIndex);
     const expectedPackageVersion = githubTag.slice(versionIndex + 2);
     pkgPath = path.join(repoPath, expectedPackageName, 'package.json');
-    pkg = JSON.parse(fs.readFileSync(pkgPathUnderMonorepo, 'utf8'));
+    pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
     expectedCommitMsg = `release: ${expectedPackageName}@v${currentVersion}`;
     ({ version: currentVersion, private: isPrivate } = pkg);
     if (currentVersion !== expectedPackageVersion) {
