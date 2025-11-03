@@ -28,10 +28,10 @@ jobs:
         # npm version npm 11.5.1 or later needed for Trusted Publishing
         run: npm install -g npm@latest
 
-      - name: Monorepo Debug
-        run: |
-          echo "repo_path='${{ github.workspace }}'"
-          ls -R ${{ github.workspace }}/packages
+      # - name: Monorepo Debug
+      #   run: |
+      #     echo "repo_path='${{ github.workspace }}'"
+      #     ls -R ${{ github.workspace }}/packages
 
       - name: Verify package version and get npm tag. Also get working directory if package lives under a monorepo
         id: verify_publish
