@@ -2817,77 +2817,149 @@ module.exports = require("util");
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
+/**
+ * GitHub Action: Verify NPM publish readiness and determine npm dist-tag.
+ *
+ * This script:
+ * - Validates that the commit message matches the package version.
+ * - Handles both single-package and monorepo setups.
+ * - Determines the appropriate npm dist-tag (latest, alpha, beta, rc).
+ *
+ * Expected commit message formats:
+ *   - Single package:  "release: v1.2.3"
+ *   - Monorepo:        "release: @scope/package@v1.2.3"
+ */
+
 const core = __nccwpck_require__(186);
 const fs = __nccwpck_require__(147);
 const path = __nccwpck_require__(17);
 
-const commitMsg = process.env.COMMIT_MESSAGE;
-const repoPath = process.env.GITHUB_WORKSPACE;
-const githubTag = commitMsg.replace(/^release:\s*/, '').trim();
+const COMMIT_MESSAGE = process.env.COMMIT_MESSAGE;
+const REPO_PATH = process.env.GITHUB_WORKSPACE;
 
-const pkgVersion = verifyPublish();
+if (!COMMIT_MESSAGE) {
+  core.setFailed('Missing COMMIT_MESSAGE environment variable.');
+  process.exit(1);
+}
 
-core.setOutput('npm_tag', pkgVersion.includes('rc') 
-  ? 'rc'
-  : pkgVersion.includes('beta')
-    ? 'beta'
-    : pkgVersion.includes('alpha')
-      ? 'alpha'
-      : 'latest');
+if (!REPO_PATH) {
+  core.setFailed('Missing GITHUB_WORKSPACE environment variable.');
+  process.exit(1);
+}
 
-// verifyPublish verifies that a package is public and its version match with the commit message.
-// If succeeds, it returns the version to be published.
-function verifyPublish() {
-  const pkgPath = path.join(repoPath, 'package.json');
-  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+const githubTag = COMMIT_MESSAGE.replace(/^release:\s*/, '').trim();
+
+try {
+  const versionToPublish = verifyPackageVersion();
+  const npmTag = resolveNpmTag(versionToPublish);
+  core.setOutput('npm_tag', npmTag);
+} catch (err) {
+  core.setFailed(err.message);
+  process.exit(1);
+}
+
+/**
+ * Determines which npm tag to use based on the version.
+ * @param {string} version - The semantic version string.
+ * @returns {string} npm dist-tag ('latest', 'alpha', 'beta', 'rc').
+ */
+function resolveNpmTag(version) {
+  if (version.includes('rc')) return 'rc';
+  if (version.includes('beta')) return 'beta';
+  if (version.includes('alpha')) return 'alpha';
+  return 'latest';
+}
+
+/**
+ * Verifies the package(s) to be published.
+ * - If single package: validates version matches commit.
+ * - If monorepo: finds correct package under /packages.
+ * @returns {string} - The version to be published.
+ * @throws {Error} if validation fails.
+ */
+function verifyPackageVersion() {
+  const pkgPath = path.join(REPO_PATH, 'package.json');
+  const pkg = readJsonFile(pkgPath);
 
   const { version: currentVersion, private: isPrivate } = pkg;
-  if (githubTag != `v${currentVersion}`) {
-    // attempt to treat the current package as a monorepo that contains the target package to be published
-    const packagesDir = path.resolve(repoPath, 'packages');
-    if (fs.existsSync(packagesDir)) {
-      return handleMonorepo(packagesDir);
-    } else {
-      core.setFailed(`Invalid commit message. \nExpected: '${expectedCommitMsg}'.\nActual: '${commitMsg}'`);
-    }
-  } else if (isPrivate) {
-    core.setFailed('Package is private.');
+  const expectedTag = `v${currentVersion}`;
+
+  if (githubTag === expectedTag) {
+    if (isPrivate) throw new Error('Package is private.');
+    return currentVersion;
   }
-  return currentVersion;
+
+  // Try handling monorepo structure
+  const packagesDir = path.join(REPO_PATH, 'packages');
+  if (!fs.existsSync(packagesDir)) {
+    throw new Error(`Commit message does not match root version.
+      Expected: 'release: ${expectedTag}'
+      Actual: '${COMMIT_MESSAGE}'`);
+  }
+
+  return verifyMonorepoPackage(packagesDir);
 }
 
-// When a package lives under a monorepo, the commit message is expected to include the package name and version separated by "@v"
-// E.g. "release: @yext/chat-headless-react@v1.2.3"
-function handleMonorepo(packagesDir) {
-  const versionIndex = githubTag.lastIndexOf('@v');
+/**
+ * Verifies a package inside a monorepo based on commit message format:
+ *   "release: @scope/package@v1.2.3"
+ * @param {string} packagesDir - Path to the monorepo "packages" directory.
+ * @returns {string} - The version of the matched package.
+ * @throws {Error} if the package cannot be found or validated.
+ */
+function verifyMonorepoPackage(packagesDir) {
+  const versionMarker = '@v';
+  const versionIndex = githubTag.lastIndexOf(versionMarker);
+
   if (versionIndex === -1) {
-    core.setFailed('Unexpected commit message format for a package contained in a monorepo');
+    throw new Error(
+      `Invalid commit message format for monorepo package.
+      Expected: "release: @scope/package@v1.2.3"
+      Actual: "${COMMIT_MESSAGE}"`
+    );
   }
-  const pkgName = githubTag.slice(0, versionIndex);
-  const pkgVersion = githubTag.slice(versionIndex + 2);
 
-  // search for all packages that the monorepo contain
-  const packageFolders = fs.readdirSync(packagesDir, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => dirent.name);
-  
-  // find the target package to be published
-  for (const folder of packageFolders) {
-    const pkgPath = path.join(packagesDir, folder, 'package.json');
-    if (!fs.existsSync(pkgPath)) continue;
+  const packageName = githubTag.slice(0, versionIndex);
+  const packageVersion = githubTag.slice(versionIndex + versionMarker.length);
 
-    try {
-      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-      if (pkg.name === pkgName && pkg.version === pkgVersion && !pkg.private) {
-        core.setOutput('working_directory', path.join(packagesDir, folder));
-        return pkg.version
-      }
-    } catch (err) {
-      core.setFailed(`Failed to parse ${packageJsonPath}:`, err);
+  const packageDirs = fs
+    .readdirSync(packagesDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name);
+
+  for (const dir of packageDirs) {
+    const packageJsonPath = path.join(packagesDir, dir, 'package.json');
+    if (!fs.existsSync(packageJsonPath)) continue;
+
+    const pkg = readJsonFile(packageJsonPath);
+    if (pkg.name === packageName && pkg.version === packageVersion && !pkg.private) {
+      core.setOutput('working_directory', path.join(packagesDir, dir));
+      return pkg.version;
     }
   }
-  core.setFailed(`Could not find a public package with name '${pkgName}' and version '${pkgVersion}' under the github monorepo`);
+
+  throw new Error(
+    `Could not find a public package matching:
+    Name: '${packageName}'
+    Version: '${packageVersion}'
+    under '${packagesDir}'`
+  );
 }
+
+/**
+ * Reads and parses a JSON file.
+ * @param {string} filePath - Path to the JSON file.
+ * @returns {object} - Parsed JSON content.
+ * @throws {Error} if file cannot be read or parsed.
+ */
+function readJsonFile(filePath) {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch (err) {
+    throw new Error(`Failed to read or parse JSON file at ${filePath}: ${err.message}`);
+  }
+}
+
 })();
 
 module.exports = __webpack_exports__;
