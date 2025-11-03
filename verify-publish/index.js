@@ -46,7 +46,7 @@ function getPackageVersionInMonorepo(packagesDir) {
     .map(dirent => dirent.name);
 console.log('>>>packageFolders: ', packageFolders);
   for (const folder of packageFolders) {
-    const packageJsonPath = path.join(packagesDir, folder, 'package.json');
+    pkgPath = path.join(packagesDir, folder, 'package.json');
     console.log('>>>packageJsonPath: ', packageJsonPath);
     if (!fs.existsSync(packageJsonPath)) {
       console.log('>>>packageJsonPath DNE');
