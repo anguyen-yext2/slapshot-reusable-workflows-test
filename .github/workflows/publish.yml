@@ -33,8 +33,8 @@ jobs:
           echo "repo_path='${{ github.workspace }}'"
           ls -R ${{ github.workspace }}/packages
 
-      - name: Verify package version and get npm tag
-        id: get_npm_tag
+      - name: Verify package version and get npm tag. Also get working directory if package lives under a monorepo
+        id: verify_publish
         uses: anguyen-yext2/slapshot-reusable-workflows-test/verify-publish@v1
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
@@ -43,7 +43,9 @@ jobs:
       - name: Debug npm tag
         run: |
           echo "commit_msg='${{ github.event.head_commit.message }}'"
-          echo "npm_tag='${{ steps.get_npm_tag.outputs.npm_tag }}'"
+          echo "npm_tag='${{ steps.verify_publish.outputs.npm_tag }}'"
 
       - name: Publish
-        run: npm publish --access public --tag ${{ steps.get_npm_tag.outputs.npm_tag }}
+        run: npm publish --access public --tag ${{ steps.verify_publish.outputs.npm_tag }}
+        with:
+          working_directory: ${{ steps.verify_publish.outputs.working_directory }}

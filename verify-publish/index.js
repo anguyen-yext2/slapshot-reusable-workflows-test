@@ -51,7 +51,7 @@ function getPackageVersionInMonorepo(packagesDir) {
     try {
       pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
       if (pkg.name === expectedPackageName && pkg.version === expectedVersion && !pkg.private) {
-        process.chdir(path.join(packagesDir, folder));
+        core.setOutput('working_directory', path.join(packagesDir, folder));
         return pkg.version
       }
     } catch (err) {
