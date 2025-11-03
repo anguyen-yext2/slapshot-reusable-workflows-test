@@ -31,6 +31,7 @@ jobs:
       - name: Monorepo Debug
         run: |
           echo "repo_path='${{ github.workspace }}'"
+          ls -R ${{ github.workspace }}/packages
 
       - name: Verify package version and get npm tag
         id: get_npm_tag
