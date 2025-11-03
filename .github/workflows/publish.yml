@@ -46,5 +46,5 @@ jobs:
           echo "npm_tag='${{ steps.verify_publish.outputs.npm_tag }}'"
 
       - name: Publish
-        working_directory: ${{ steps.verify_publish.outputs.working_directory }}
+        working-directory: ${{ steps.verify_publish.outputs.working_directory }}
         run: npm publish --access public --tag ${{ steps.verify_publish.outputs.npm_tag }}
