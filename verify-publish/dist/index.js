@@ -2866,7 +2866,11 @@ function getPackageVersionInMonorepo(packagesDir) {
 console.log('>>>packageFolders: ', packageFolders);
   for (const folder of packageFolders) {
     const packageJsonPath = path.join(packagesDir, folder, 'package.json');
-    if (!fs.existsSync(packageJsonPath)) continue;
+    console.log('>>>packageJsonPath: ', packageJsonPath);
+    if (!fs.existsSync(packageJsonPath)) {
+      console.log('>>>packageJsonPath DNE');
+      continue
+    };
 
     try {
       const content = fs.readFileSync(packageJsonPath, 'utf-8');
