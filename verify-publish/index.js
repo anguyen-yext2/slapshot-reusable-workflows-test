@@ -5,7 +5,7 @@ const path = require('path');
 const commitMsg = process.env.COMMIT_MESSAGE;
 const repoPath = process.env.GITHUB_WORKSPACE;//core.getInput('REPO_PATH');
 console.log('>>>repoPath: ', repoPath);
-const pkgPath = path.join(repoPath, 'package.json');
+let pkgPath = path.join(repoPath, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 
 let { version: currentVersion, private: isPrivate } = pkg;
