@@ -2825,7 +2825,7 @@ const commitMsg = process.env.COMMIT_MESSAGE;
 const repoPath = process.env.GITHUB_WORKSPACE;//core.getInput('REPO_PATH');
 console.log('>>>repoPath: ', repoPath);
 let pkgPath = path.join(repoPath, 'package.json');
-const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+let pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 
 let { version: currentVersion, private: isPrivate } = pkg;
 
@@ -2866,14 +2866,14 @@ function getPackageVersionInMonorepo(packagesDir) {
 console.log('>>>packageFolders: ', packageFolders);
   for (const folder of packageFolders) {
     pkgPath = path.join(packagesDir, folder, 'package.json');
-    console.log('>>>packageJsonPath: ', packageJsonPath);
-    if (!fs.existsSync(packageJsonPath)) {
-      console.log('>>>packageJsonPath DNE');
+    console.log('>>>pkgPath: ', pkgPath);
+    if (!fs.existsSync(pkgPath)) {
+      console.log('>>>pkgPath DNE');
       continue
     };
 
     try {
-      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+      pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 console.log('>>>pkg: ', pkg);
 
       if (pkg.name === expectedPackageName && pkg.version === expectedVersion && !pkg.private) {
