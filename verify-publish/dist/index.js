@@ -2821,9 +2821,9 @@ const core = __nccwpck_require__(186);
 const fs = __nccwpck_require__(147);
 const path = __nccwpck_require__(17);
 
-const commitMsg = core.getInput('COMMIT_MSG');
+const commitMsg = process.env.COMMIT_MESSAGE;
 const repoPath = process.env.GITHUB_WORKSPACE;//core.getInput('REPO_PATH');
-console.log('>>>repo path: ', repoPath)
+console.log('>>>repoPath: ', repoPath);
 const pkgPath = path.join(repoPath, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 
