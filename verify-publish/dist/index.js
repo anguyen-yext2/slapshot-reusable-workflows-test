@@ -2826,18 +2826,18 @@ const repoPath = core.getInput('REPO_PATH');
 
 const pkgPath = path.join(repoPath, 'package.json');
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-
+console.log('>>>pkg: ', pkg);
 let { version: currentVersion, private: isPrivate } = pkg;
 
 const expectedCommitMsg = `release: v${currentVersion}`;
 if (commitMsg !== expectedCommitMsg) {
-  // handle monorepo
-  const packagesDir = path.resolve(repoPath, 'packages');
-  if (fs.existsSync(packagesDir)) {
-    currentVersion = getPackageVersionInMonorepo();
-  } else {
+  // // handle monorepo
+  // const packagesDir = path.resolve(repoPath, 'packages');
+  // if (fs.existsSync(packagesDir)) {
+  //   currentVersion = getPackageVersionInMonorepo();
+  // } else {
     core.setFailed(`Invalid commit message. \nExpected: '${expectedCommitMsg}'.\nActual: '${commitMsg}'`);
-  }
+  // }
 } else if (isPrivate) {
   core.setFailed('Package is private.');
 }
