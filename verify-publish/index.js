@@ -8,7 +8,7 @@ const githubTag = commitMsg.replace(/^release:\s*/, '').trim();
 
 const pkgVersion = verifyPublish();
 
-core.setOutput('npm_tag', currentVersion.includes('rc') 
+core.setOutput('npm_tag', pkgVersion.includes('rc') 
   ? 'rc'
   : currentVersion.includes('beta')
     ? 'beta'
