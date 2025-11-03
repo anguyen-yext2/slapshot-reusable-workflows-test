@@ -2829,9 +2829,9 @@ const pkgVersion = verifyPublish();
 
 core.setOutput('npm_tag', pkgVersion.includes('rc') 
   ? 'rc'
-  : currentVersion.includes('beta')
+  : pkgVersion.includes('beta')
     ? 'beta'
-    : currentVersion.includes('alpha')
+    : pkgVersion.includes('alpha')
       ? 'alpha'
       : 'latest');
 
