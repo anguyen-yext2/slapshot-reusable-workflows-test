@@ -2873,8 +2873,7 @@ console.log('>>>packageFolders: ', packageFolders);
     };
 
     try {
-      const content = fs.readFileSync(packageJsonPath, 'utf-8');
-      pkg = JSON.parse(content);
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
 console.log('>>>pkg: ', pkg);
 
       if (pkg.name === expectedPackageName && pkg.version === expectedVersion && !pkg.private) {
