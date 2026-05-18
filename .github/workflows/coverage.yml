@@ -31,17 +31,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.comparison_branch }}
-      - name: Use Node.js 16.x
+          # PR: lock to immutable base commit; non-PR fallback: configured branch
+          ref: ${{ github.event.pull_request.base.sha || inputs.comparison_branch }}
+          fetch-depth: 1
+      - name: Use Node.js 20.x
         uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          node-version: 20.x
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm rebuild
-      - uses: anguyen-yext2/slapshot-reusable-workflows-test/run-script@v1
+      - uses: yext/slapshot-reusable-workflows/run-script@v1
         with:
           script: ${{ inputs.test_script }}
         env:
@@ -57,16 +59,19 @@ jobs:
       coverage-percent: ${{ steps.parse-coverage.outputs.coverage-percent }}
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js 16.x
+      - name: Use Node.js 20.x
         uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          # PR: lock to immutable base commit; non-PR fallback: configured branch
+          ref: ${{ github.event.pull_request.base.sha || inputs.comparison_branch }}
+          fetch-depth: 1
+          node-version: 20.x
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci --ignore-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - run: npm rebuild
-      - uses: anguyen-yext2/slapshot-reusable-workflows-test/run-script@v1
+      - uses: yext/slapshot-reusable-workflows/run-script@v1
         with:
           script: ${{ inputs.test_script }}
         env:
